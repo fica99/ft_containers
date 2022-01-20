@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 18:40:11 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/20 18:41:12 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/20 19:54:40 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@ namespace TestRunnerPrivate {
     std::ostream& PrintMap(std::ostream& os, const Map<K, V>& m) {
         os << "{";
         bool first = true;
-        for (const auto& kv : m) {
+        for (typename Map<K, V>::const_iterator it = m.begin(); it != m.end(); ++it) {
             if (!first) {
                 os << ", ";
             }
             first = false;
-            os << kv.first << ": " << kv.second;
+            os << it->first << ": " << it->second;
         }
         return os << "}";
     }
@@ -46,12 +46,12 @@ template <class T>
 std::ostream& operator << (std::ostream& os, const std::vector<T>& s) {
     os << "{";
     bool first = true;
-    for (const auto& x : s) {
+    for (typename std::__1::vector<T>::const_iterator it = s.begin(); it != s.end(); ++it) {
         if (!first) {
             os << ", ";
         }
         first = false;
-        os << x;
+        os << *it;
     }
     return os << "}";
 }
@@ -60,12 +60,12 @@ template <class T>
 std::ostream& operator << (std::ostream& os, const std::set<T>& s) {
     os << "{";
     bool first = true;
-    for (const auto& x : s) {
+    for (typename std::__1::set<T>::const_iterator it = s.begin(); it != s.end(); ++it) {
         if (!first) {
             os << ", ";
         }
         first = false;
-        os << x;
+        os << *it;
     }
     return os << "}";
 }
@@ -81,7 +81,7 @@ std::ostream& operator << (std::ostream& os, const std::unordered_map<K, V>& m) 
 }
 
 template<class T, class U>
-void AssertEqual(const T& t, const U& u, const std::string& hint = {}) {
+void AssertEqual(const T& t, const U& u, const std::string& hint = "") {
     if (!(t == u)) {
         std::ostringstream os;
         os << "Assertion failed: " << t << " != " << u;
@@ -98,6 +98,7 @@ inline void Assert(bool b, const std::string& hint) {
 
 class TestRunner {
 public:
+    TestRunner() : fail_count(0) {}
     template <class TestFunc>
     void RunTest(TestFunc func, const std::string& test_name) {
         try {
@@ -121,7 +122,7 @@ public:
     }
 
 private:
-    int fail_count = 0;
+    int fail_count;
 };
 
 #ifndef FILE_NAME

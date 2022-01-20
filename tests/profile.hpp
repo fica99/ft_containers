@@ -6,14 +6,14 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 18:53:30 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/20 18:57:13 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/20 19:59:12 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PROFILE_HPP
 # define PROFILE_HPP
 
-#include <chrono>
+#include <sys/time.h>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -23,22 +23,25 @@ class LogDuration {
 public:
     explicit LogDuration(const std::string& msg = "")
     : message(msg + ": ")
-    , start(std::chrono::steady_clock::now())
     {
+        struct timeval start;
+        gettimeofday(&start, NULL);
+        start_ms = start.tv_sec * 1000 + start.tv_usec / 1000;
     }
 
     ~LogDuration() {
-    auto finish = std::chrono::steady_clock::now();
-    auto dur = finish - start;
-    std::ostringstream os;
-    os << message
-         << std::chrono::duration_cast<std::chrono::milliseconds>(dur).count()
-         << " ms" << std::endl;
-    std::cerr << os.str();
+        struct timeval finish;
+        gettimeofday(&finish, NULL);
+        std::ostringstream os;
+        long int finish_ms = finish.tv_sec * 1000 + finish.tv_usec / 1000;
+        os << message
+            << finish_ms - start_ms
+            << " ms" << std::endl;
+        std::cerr << os.str();
     }
 private:
     std::string message;
-    std::chrono::steady_clock::time_point start;
+    long int start_ms;
 };
 
 #ifndef UNIQ_ID
@@ -47,6 +50,6 @@ private:
 #endif
 
 #define LOG_DURATION(message) \
-    LogDuration UNIQ_ID(__LINE__){message};
+    LogDuration UNIQ_ID(__LINE__)(message);
 
 #endif // PROFILE_HPP
