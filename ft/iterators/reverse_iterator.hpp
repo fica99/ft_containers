@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 12:00:48 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/23 13:33:29 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/23 22:20:27 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,10 @@ public:
     typedef iterator_traits<Iter>::reference reference;
 
 // Member functions
-    reverse_iterator()
-    {
-        current();
-    }
-    explicit reverse_iterator(iterator_type x) :
-        current(x)
-    { 
-    }
+    reverse_iterator() { current(); }
+    explicit reverse_iterator(iterator_type x) : current(x) {}
     template<class U>
-    reverse_iterator(const reverse_iterator<U>& other) :
-        current(other.current)
-    {
-    }
+    reverse_iterator(const reverse_iterator<U>& other) : current(other.current) {}
     template< class U>
     reverse_iterator& operator=(const reverse_iterator<U>& other)
     {
@@ -84,14 +75,8 @@ public:
         --(*this);
         return tmp;
     }
-    reverse_iterator operator+(difference_type n) const
-    {
-        return reverse_iterator(current - n);
-    }
-    reverse_iterator operator-(difference_type n) const
-    {
-        return reverse_iterator(current + n);
-    }
+    reverse_iterator operator+(difference_type n) const { return reverse_iterator(current - n); }
+    reverse_iterator operator-(difference_type n) const { return reverse_iterator(current + n); }
     reverse_iterator& operator+=(difference_type n)
     {
         current = current - n;
