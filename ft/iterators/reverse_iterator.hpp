@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 12:00:48 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/24 11:54:17 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/24 21:08:36 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ class reverse_iterator
 public:
 // Member types
     typedef Iter iterator_type;
-    typedef iterator_traits<Iter>::iterator_category iterator_category;
-    typedef iterator_traits<Iter>::value_type value_type;
-    typedef iterator_traits<Iter>::difference_type difference_type;
-    typedef iterator_traits<Iter>::pointer pointer;
-    typedef iterator_traits<Iter>::reference reference;
+    typedef typename iterator_traits<Iter>::iterator_category iterator_category;
+    typedef typename iterator_traits<Iter>::value_type value_type;
+    typedef typename iterator_traits<Iter>::difference_type difference_type;
+    typedef typename iterator_traits<Iter>::pointer pointer;
+    typedef typename iterator_traits<Iter>::reference reference;
 
 // Member functions
     reverse_iterator() { current(); }

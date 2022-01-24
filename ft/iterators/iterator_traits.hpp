@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 12:02:01 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/24 11:19:49 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/24 21:07:40 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,11 @@ template<class Iter>
 struct iterator_traits
 {
 // Member types
-    typedef Iter::difference_type difference_type;
-    typedef Iter::value_type value_type;
-    typedef Iter::pointer pointer;
-    typedef Iter::reference reference;
-    typedef Iter::iterator_category iterator_category;
+    typedef typename Iter::difference_type difference_type;
+    typedef typename Iter::value_type value_type;
+    typedef typename Iter::pointer pointer;
+    typedef typename Iter::reference reference;
+    typedef typename Iter::iterator_category iterator_category;
 };
 
 template< class T >

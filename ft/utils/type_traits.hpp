@@ -6,14 +6,14 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 13:09:33 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/23 18:23:17 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/24 21:12:51 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPE_TRAITS_HPP
 # define TYPE_TRAITS_HPP
 
-#include <uchar.h>
+#include <cstdint>
 
 namespace ft
 {
@@ -30,8 +30,10 @@ struct is_integral_base
 // Member types
     typedef T type;
     typedef bool value_type;
+
 // Member constants
     static const value_type value = is_integral;
+
 // Member functions
     operator bool() const
     {
@@ -40,89 +42,55 @@ struct is_integral_base
 };
 
 template <typename>
-struct is_integral_type : public is_integral_base<false, bool>
-{
-};
+struct is_integral_type : public is_integral_base<false, bool> {};
 
 template <>
-struct is_integral_type<bool> : public is_integral_base<true, bool>
-{
-};
+struct is_integral_type<bool> : public is_integral_base<true, bool> {};
 
 template <>
-struct is_integral_type<char> : public is_integral_base<true, char>
-{
-};
+struct is_integral_type<char> : public is_integral_base<true, char> {};
 
 template <>
-struct is_integral_type<unsigned char> : public is_integral_base<true, unsigned char>
-{
-};
+struct is_integral_type<unsigned char> : public is_integral_base<true, unsigned char> {};
 
 template <>
-struct is_integral_type<signed char> : public is_integral_base<true, signed char>
-{
-};
+struct is_integral_type<signed char> : public is_integral_base<true, signed char> {};
 
 template <>
-struct is_integral_type<char16_t> : public is_integral_base<true, char16_t>
-{
-};
+struct is_integral_type<char16_t> : public is_integral_base<true, char16_t> {};
 
 template <>
-struct is_integral_type<char32_t> : public is_integral_base<true, char32_t>
-{
-};
+struct is_integral_type<char32_t> : public is_integral_base<true, char32_t> {};
 
 template <>
-struct is_integral_type<wchar_t> : public is_integral_base<true, wchar_t>
-{
-};
+struct is_integral_type<wchar_t> : public is_integral_base<true, wchar_t> {};
 
 template <>
-struct is_integral_type<short> : public is_integral_base<true, short>
-{
-};
+struct is_integral_type<short> : public is_integral_base<true, short> {};
 
 template <>
-struct is_integral_type<unsigned short> : public is_integral_base<true, unsigned short>
-{
-};
+struct is_integral_type<unsigned short> : public is_integral_base<true, unsigned short>{};
 
 template <>
-struct is_integral_type<int> : public is_integral_base<true, int>
-{
-};
+struct is_integral_type<int> : public is_integral_base<true, int> {};
 
 template <>
-struct is_integral_type<unsigned int> : public is_integral_base<true, unsigned int>
-{
-};
+struct is_integral_type<unsigned int> : public is_integral_base<true, unsigned int> {};
 
 template <>
-struct is_integral_type<long> : public is_integral_base<true, long>
-{
-};
+struct is_integral_type<long> : public is_integral_base<true, long> {};
 
 template <>
-struct is_integral_type<unsigned long> : public is_integral_base<true, unsigned long>
-{
-};
+struct is_integral_type<unsigned long> : public is_integral_base<true, unsigned long> {};
 
 template <>
-struct is_integral_type<long long> : public is_integral_base<true, long long>
-{
-};
+struct is_integral_type<long long> : public is_integral_base<true, long long> {};
 
 template <>
-struct is_integral_type<unsigned long long> : public is_integral_base<true, unsigned long long>
-{
-};
+struct is_integral_type<unsigned long long> : public is_integral_base<true, unsigned long long> {};
 
 template <typename T>
-struct is_integral : public is_integral_type<T>
-{
-};
+struct is_integral : public is_integral_type<T> {};
 
 }
 #endif // TYPE_TRAITS_HPP

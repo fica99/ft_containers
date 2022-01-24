@@ -6,7 +6,7 @@
 #    By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/23 18:46:40 by aashara-          #+#    #+#              #
-#    Updated: 2022/01/21 17:58:08 by aashara-         ###   ########.fr        #
+#    Updated: 2022/01/24 21:06:34 by aashara-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME	:=	 	tester
 
 # ------------  DIRECTORIES  ------------------------------------------------- #
 TMP_DIR =		tmp
-HDR_DIR =		../ft_containers
+HDR_DIR =		../ft/containers
 
 # ------------  SOURCE FILES  ------------------------------------------------ #
 PRE_FLS	=		

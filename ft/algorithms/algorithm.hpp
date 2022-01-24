@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 17:04:30 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/23 17:27:06 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/24 21:02:13 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2)
 {
     for (; first1 != last1; ++first1, ++first2)
     {
-        if (!(*first1 == *first2))
+        if (*first1 != *first2)
         {
             return false;
         }
