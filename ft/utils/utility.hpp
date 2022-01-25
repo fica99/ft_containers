@@ -6,12 +6,12 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 17:38:48 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/23 17:39:35 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/25 17:46:59 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILITY_HPP
-# define UTILITY_HPP
+#define UTILITY_HPP
 
 #include "pair.hpp"
 
