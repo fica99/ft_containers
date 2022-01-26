@@ -21,6 +21,15 @@
 		"iosfwd": "cpp",
 		"bitset": "cpp",
 		"memory": "cpp",
-		"stack": "cpp"
+		"stack": "cpp",
+		"list": "cpp",
+		"__node_handle": "cpp",
+		"atomic": "cpp",
+		"complex": "cpp",
+		"memory_resource": "cpp",
+		"optional": "cpp",
+		"queue": "cpp",
+		"type_traits": "cpp",
+		"utility": "cpp"
 	}
 }

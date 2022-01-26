@@ -6,7 +6,7 @@
 #    By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/23 18:46:40 by aashara-          #+#    #+#              #
-#    Updated: 2022/01/24 21:06:34 by aashara-         ###   ########.fr        #
+#    Updated: 2022/01/25 19:36:26 by aashara-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,13 +15,13 @@ NAME	:=	 	tester
 
 # ------------  DIRECTORIES  ------------------------------------------------- #
 TMP_DIR =		tmp
-HDR_DIR =		../ft/containers
+HDR_DIR =		../../ft/containers
 
 # ------------  SOURCE FILES  ------------------------------------------------ #
 PRE_FLS	=		
 
 SRC_FLS	=		$(PRE_FLS) \
-				vector_tests.cpp \
+				main.cpp \
 
 # ------------  FILEPATHS  --------------------------------------------------- #
 SRCS	=		$(SRC_FLS)
@@ -38,6 +38,7 @@ DEPFLGS	=		-MMD -MP
 
 ifeq ($(findstring std,$(MAKECMDGOALS)),std)
 	CFLGS += -DSTD
+	NAME := $(NAME)_std
 endif
 
 # ------------  RULES  ------------------------------------------------------- #
@@ -63,5 +64,7 @@ clean:
 
 fclean: clean
 	$(RM) $(NAME)
+	$(RM) $(NAME)_std
+
 
 re: fclean all
