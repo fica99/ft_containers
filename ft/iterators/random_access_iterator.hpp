@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 23:32:59 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/26 20:23:25 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/27 15:31:16 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ public:
     typedef typename iterator<random_access_iterator_tag, T>::iterator_category iterator_category;
     typedef typename iterator<random_access_iterator_tag, T>::value_type value_type;
     typedef typename iterator<random_access_iterator_tag, T>::difference_type difference_type;
-    typedef T* pointer;
-    typedef T& reference;
+    typedef typename iterator<random_access_iterator_tag, T>::pointer pointer;
+    typedef typename iterator<random_access_iterator_tag, T>::reference reference;
     explicit random_access_iterator(T* ptr = NULL) : m_Ptr(ptr) { }
     random_access_iterator(const random_access_iterator& other) : m_Ptr(other.m_Ptr) { }
     random_access_iterator &operator=(const random_access_iterator& other)
