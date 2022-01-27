@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:38:47 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/27 15:41:59 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/27 22:17:21 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 #include "../utils/functional.hpp"
 #include "../utils/utility.hpp"
+#include "../strings/string.hpp"
 #include "bst.hpp"
 
 namespace ft
@@ -42,8 +43,9 @@ public:
     typedef value_type& reference;
     typedef const value_type& const_reference;
     typedef typename Allocator::pointer pointer;
-    typedef typename bst<value_type, key_compare, allocator_type>::iterator iterator;
-    typedef typename bst<value_type, key_compare, allocator_type>::const_iterator const_iterator;
+    typedef typename Allocator::const_pointer const_pointer;
+    typedef typename bst<value_type, key_compare>::iterator iterator;
+    typedef typename bst<value_type, key_compare>::const_iterator const_iterator;
     typedef reverse_iterator<const_iterator> const_reverse_iterator;
     typedef reverse_iterator<iterator> reverse_iterator;
 
@@ -51,8 +53,8 @@ public:
     {
     protected:
         Compare comp;
-    public:
         value_compare(Compare c) : comp(c) { }
+    public:
         bool operator()(const value_type& x, const value_type& y) const
         {
             return comp(x.first, y.first);
@@ -62,20 +64,20 @@ public:
     explicit map( const Compare& comp = Compare(),
         const Allocator& alloc = Allocator() )  : m_Comp(comp)
                                                 , m_Allocator(alloc)
-                                                , m_Bst()
+                                                , m_Bst(comp, alloc)
     {}
     template< class InputIt >
     map( InputIt first, InputIt last,
          const Compare& comp = Compare(),
          const Allocator& alloc = Allocator() ) : m_Comp(comp)
                                                 , m_Allocator(alloc)
-                                                , m_Bst()
+                                                , m_Bst(comp, alloc)
     {
         insert(first, last);
     }
     map( const map& other ) : m_Comp(other.m_Comp)
                             , m_Allocator(other.m_Allocator)
-                            , m_Bst()
+                            , m_Bst(other.m_Comp, other.m_Allocator)
     {
         insert(other.begin(), other.end());
     }
@@ -87,6 +89,8 @@ public:
     {
         if (this != &other)
         {
+            m_Allocator = other.m_Allocator;
+            m_Comp = other.m_Comp;
             clear();
             insert(other.begin(), other.end());
         }
@@ -98,63 +102,164 @@ public:
         iterator tmp = find(key);
         if (tmp == end())
         {
-            throw std::out_of_range("map::at");
+            throw std::out_of_range("map::at: " + to_string(key) + " key not found");
         }
         return tmp->second;
     }
     const T& at( const Key& key ) const
     {
-        at(key);
+        return at(key);
     }
     T& operator[]( const Key& key )
     {
-        iterator tmp = find(key);
+        const_iterator tmp = find(key);
         if (tmp == end())
         {
-            insert(make_pair(key, mapped_type()));
+            return insert(make_pair(key, T())).first->second;
         }
         return tmp->second;
     }
-    iterator begin(void) { return iterator(m_Bst.m_Roots->left, m_Bst.m_Roots); }
-    const_iterator begin(void) const { return const_iterator(m_Bst.m_Roots->left, m_Bst.m_Roots); }
-    iterator end(void) { return iterator(m_Bst.m_Roots, m_Bst.m_Roots); }
-    const_iterator end(void) const { return const_iterator(m_Bst.m_Roots, m_Bst.m_Roots); }
+    iterator begin(void) { return iterator(m_Bst.begin(), m_Bst.end()); }
+    const_iterator begin(void) const { return const_iterator(m_Bst.begin(), m_Bst.end()); }
+    iterator end(void) { return iterator(m_Bst.end(), m_Bst.end()); }
+    const_iterator end(void) const { return const_iterator(m_Bst.end(), m_Bst.end()); }
     reverse_iterator rbegin(void) { return reverse_iterator(end());}
     const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
     reverse_iterator rend(void) { return reverse_iterator(begin()); }
     const_reverse_iterator rend(void) const { return const_reverse_iterator(begin()); }
-    bool empty(void) const { return m_Bst.m_Size == 0; }
-    size_t size(void) const { return m_Bst.m_Size; }
+    bool empty(void) const { return m_Bst.size() == 0; }
+    size_type size(void) const { return m_Bst.size(); }
     size_type max_size(void) const { return m_Allocator.max_size(); }
     void clear(void)
     {
-        //erase(begin(), end());
+        erase(begin(), end());
     }
     pair<iterator, bool> insert(const value_type& value)
     {
-       // pair<Node> m_Bst.insertPair(value);
+       return m_Bst.insert_pair(value);
     }
     iterator insert(iterator hint, const value_type& value)
     {
-        
+        (void)hint;
+        return insert(value).first;
     }
     template< class InputIt >
     void insert( InputIt first, InputIt last )
     {
+        for (; first != last; ++first)
+        {
+            insert(*first);
+        }
+    }
+    void erase( iterator pos )
+    {
+        erase(pos->first);
+    }
+    void erase( iterator first, iterator last )
+    {
+        for (; first != last; ++first)
+        {
+            erase(first->first);
+        }
+    }
+    size_type erase( const Key& key )
+    {
+        if (find(key) == end())
+        {
+            return (0);
+        }
+        m_Bst.remove_by_key(make_pair(key, mapped_type()));
+        return (1);
+    }
+    void swap( map& other )
+    {
+        m_Bst.swap(other);
+
+        Compare tmp_comp = m_Comp;
+        Allocator tmp_allocator = m_Allocator;
         
+        m_Comp = other.m_Comp;
+        m_Allocator = other.m_Allocator;
+
+        other.m_Comp = tmp_comp;
+        other.m_Allocator = tmp_allocator;
     }
-    iterator find(const key_type& k)
+    size_type count( const Key& key ) const
     {
-        return iterator(m_Bst.searchByKey(make_pair(k, mapped_type())));
+        const_iterator begin = begin();
+        const_iterator end = end();
+        for ( ; begin != end; ++begin)
+        {
+            if (begin->first == key)
+            {
+                return (1);
+            }
+        }
+        return (0);
     }
-    const_iterator find(const key_type& k) const
+    iterator find( const Key& key )
     {
-        return const_iterator(m_Bst.searchByKey(make_pair(k, mapped_type())));
+        return iterator(m_Bst.search_by_key(make_pair(key, mapped_type())), m_Bst.end());
     }
+    const_iterator find( const Key& key ) const
+    {
+        return const_iterator(m_Bst.search_by_key(make_pair(key, mapped_type())), end());
+    }
+    pair<iterator,iterator> equal_range( const Key& key )
+    {
+        return make_pair(lower_bound(key), upper_bound(key));
+    }
+    pair<const_iterator,const_iterator> equal_range( const Key& key ) const
+    {
+        return make_pair(lower_bound(key), upper_bound(key));
+    }
+    iterator lower_bound( const Key& key )
+    {
+        iterator begin = begin();
+        iterator end = end();
+        for ( ; begin != end; ++begin)
+        {
+            if (!m_Comp(begin->first, key))
+            {
+                break;
+            }
+        }
+        return begin;
+    }
+    const_iterator lower_bound( const Key& key ) const
+    {
+        return const_iterator(lower_bound(key));
+    }
+    iterator upper_bound( const Key& key )
+    {
+        iterator begin = begin();
+        iterator end = end();
+        for ( ; begin != end; ++begin)
+        {
+            if (!m_Comp(key, begin->first))
+            {
+                break;
+            }
+        }
+        return begin;
+    }
+    const_iterator upper_bound( const Key& key ) const
+    {
+        return const_iterator(upper_bound(key));
+    }
+    key_compare key_comp() const
+    {
+        return m_Comp;
+    }
+    value_compare value_comp() const
+    {
+        return value_compare(m_Comp);
+    }
+
 private:
-    Compare m_Comp;
-    Allocator m_Allocator;
-    bst<value_type, Compare, Allocator> m_Bst;
+    key_compare m_Comp;
+    allocator_type m_Allocator;
+    bst<value_type, key_compare> m_Bst;
 };
 
 }

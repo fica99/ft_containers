@@ -30,6 +30,12 @@
 		"optional": "cpp",
 		"queue": "cpp",
 		"type_traits": "cpp",
-		"utility": "cpp"
+		"utility": "cpp",
+		"__functional_03": "cpp",
+		"new": "cpp",
+		"__debug": "cpp",
+		"__string": "cpp",
+		"__config": "cpp",
+		"version": "cpp"
 	}
 }
