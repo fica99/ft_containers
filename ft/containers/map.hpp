@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:38:47 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 15:04:04 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 21:38:30 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ public:
     typedef typename Allocator::const_pointer const_pointer;
     typedef typename bst<value_type, key_compare>::iterator iterator;
     typedef typename bst<value_type, key_compare>::const_iterator const_iterator;
-    typedef reverse_iterator<const_iterator> const_reverse_iterator;
-    typedef reverse_iterator<iterator> reverse_iterator;
+    typedef typename bst<value_type, key_compare>::const_reverse_iterator const_reverse_iterator;
+    typedef typename bst<value_type, key_compare>::reverse_iterator reverse_iterator;
 
     class value_compare : binary_function<value_type, value_type, bool>
     {
@@ -79,10 +79,8 @@ public:
     }
     map( const map& other ) : m_Comp(other.m_Comp)
                             , m_Allocator(other.m_Allocator)
-                            , m_Bst(other.m_Comp, other.m_Allocator)
-    {
-        insert(other.begin(), other.end());
-    }
+                            , m_Bst(other.m_Bst)
+    {}
     ~map()
     {
         clear();
@@ -94,7 +92,8 @@ public:
             m_Allocator = other.m_Allocator;
             m_Comp = other.m_Comp;
             clear();
-            insert(other.begin(), other.end());
+            ~m_Bst();
+            m_Bst(other.m_Bst);
         }
         return *this;
     }
@@ -110,7 +109,12 @@ public:
     }
     const T& at( const Key& key ) const
     {
-        return at(key);
+        const_iterator tmp = find(key);
+        if (tmp == end())
+        {
+            throw std::out_of_range("map::at: " + to_string(key) + " key not found");
+        }
+        return tmp->second;
     }
     T& operator[]( const Key& key )
     {
@@ -200,7 +204,7 @@ public:
     }
     const_iterator find( const Key& key ) const
     {
-        return const_iterator(m_Bst.search_by_key(make_pair(key, mapped_type())), end());
+        return const_iterator(m_Bst.search_by_key(make_pair(key, mapped_type())), m_Bst.end());
     }
     pair<iterator,iterator> equal_range( const Key& key )
     {

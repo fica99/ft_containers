@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 16:43:39 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 16:19:01 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 21:41:29 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <memory>
 
 #include "../iterators/iterator.hpp"
-#include "../iterators/reverse_iterator.hpp"
 #include "../utils/utility.hpp"
 
 namespace ft
@@ -67,21 +66,18 @@ public:
     bst_node* right;
 };
 
-template <typename T, class Compare>
-class bst_const_iterator;
 
-template <typename T, class Compare>
-class bst_iterator : iterator<bidirectional_iterator_tag, T>
+template <typename T, typename Node, class Compare>
+class bst_iterator : public iterator<bidirectional_iterator_tag, T>
 {
 public:
-    friend class bst_const_iterator<T, Compare>;
-
-    typedef typename T::value_type value_type;
+    typedef T value_type;
     typedef typename iterator<bidirectional_iterator_tag, value_type>::iterator_category iterator_category;
     typedef typename iterator<bidirectional_iterator_tag, value_type>::difference_type difference_type;
     typedef typename iterator<bidirectional_iterator_tag, value_type>::pointer pointer;
     typedef typename iterator<bidirectional_iterator_tag, value_type>::reference reference;
-    bst_iterator(T* node = NULL, T* end = NULL,
+
+    bst_iterator(Node* node = NULL, Node* end = NULL,
         const Compare& comp = Compare()) : m_Node(node)
                                          , m_End(end)
                                          , m_Comp(comp)
@@ -119,7 +115,7 @@ public:
     }
     bst_iterator& operator++(void)
     {
-        T* current = m_Node;
+        Node* current = m_Node;
         if (current->right == m_End)
         {
             current = m_Node->parent;
@@ -149,9 +145,9 @@ public:
         operator++();
         return (tmp);
     }
-    bst_iterator &operator--(void)
+    bst_iterator& operator--(void)
     {
-        T* current = m_Node;
+        Node* current = m_Node;
         if (current->left == m_End)
         {
             current = m_Node->parent;
@@ -181,149 +177,29 @@ public:
         operator--();
         return (tmp);
     }
-private:
-    T* m_Node;
-    T* m_End;
-    Compare m_Comp;
-};
-
-template <typename T, class Compare>
-class bst_const_iterator : iterator<bidirectional_iterator_tag, T>
-{
-public:
-    typedef typename T::value_type value_type;
-    typedef typename iterator<bidirectional_iterator_tag, value_type>::iterator_category iterator_category;
-    typedef typename iterator<bidirectional_iterator_tag, value_type>::difference_type difference_type;
-    typedef typename iterator<bidirectional_iterator_tag, value_type>::pointer pointer;
-    typedef typename iterator<bidirectional_iterator_tag, value_type>::reference reference;
-    bst_const_iterator(T* node = NULL, T* end = NULL,
-        const Compare& comp = Compare()) : m_Node(node)
-                                         , m_End(end)
-                                         , m_Comp(comp)
-    { }
-    bst_const_iterator(const bst_const_iterator& other) : m_Node(other.m_Node)
-                                            , m_End(other.m_End)
-                                            , m_Comp(other.m_Comp)
-    { }
-    bst_const_iterator(const bst_iterator<T, Compare>& other) : m_Node(other.m_Node)
-                                            , m_End(other.m_End)
-                                            , m_Comp(other.m_Comp)
-    { }
-    virtual ~bst_const_iterator() {}
-    bst_const_iterator& operator=(const bst_const_iterator& other)
-    {
-        if (this != &other)
-        {
-            m_Node = other.m_Node;
-            m_End = other.m_End;
-            m_Comp = other.m_Comp;
-        }
-        return (*this);
-    }
-    bool operator==(const bst_const_iterator& other)
-    {
-        return m_Node == other.m_Node;
-    }
-    bool operator!=(const bst_const_iterator& other)
-    {
-        return m_Node != other.m_Node;
-    }
-    reference operator*() const
-    {
-        return m_Node->value;
-    }
-    pointer operator->() const
-    {
-        return &m_Node->value;
-    }
-    bst_const_iterator& operator++(void)
-    {
-        T* current = m_Node;
-        if (current->right == m_End)
-        {
-            current = m_Node->parent;
-            while (current != m_End && m_Comp(current->value.first, m_Node->value.first))
-            {
-                current = current->parent;
-            }
-        }
-        else if (current == m_End)
-        {
-            current = current->left;
-        }
-        else
-        {
-            current = m_Node->right;
-            while (current->left != m_End)
-            {
-                current = current->left;
-            }
-        }
-        m_Node = current;
-        return *this;
-    }
-    bst_const_iterator operator++(int)
-    {
-        bst_const_iterator tmp(*this);
-        operator++();
-        return (tmp);
-    }
-    bst_const_iterator &operator--(void)
-    {
-        T* current = m_Node;
-        if (current->left == m_End)
-        {
-            current = m_Node->parent;
-            while (current != m_End && !m_Comp(current->value.first, m_Node->value.first))
-            {
-                current = current->parent;
-            }
-        }
-        else if (current == m_End)
-        {
-            current = current->right;
-        }
-        else
-        {
-            current = m_Node->left;
-            while (current->right != m_End)
-            {
-                current = current->right;
-            }
-        }
-        m_Node = current;
-        return *this;
-    }
-    bst_const_iterator operator--(int)
-    {
-        bst_const_iterator tmp(*this);
-        operator--();
-        return (tmp);
-    }
-
-private:
-    T* m_Node;
-    T* m_End;
+protected:
+    Node* m_Node;
+    Node* m_End;
     Compare m_Comp;
 };
 
 template <
     typename T,
     typename Compare,
-    typename Node = bst_node<T>,
-    typename Allocator = std::allocator<Node>
+    typename Allocator = std::allocator<bst_node<T> >
 > class bst
 {
 public:
     typedef T value_type;
-    typedef Allocator allocator_type;
     typedef Compare key_compare;
+    typedef Allocator allocator_type;
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
     typedef value_type& reference;
     typedef const value_type& const_reference;
-    typedef bst_iterator<Node, Compare> iterator;
-    typedef bst_const_iterator<Node, Compare> const_iterator;
+    typedef bst_node<value_type> Node;
+    typedef bst_iterator<T, Node, Compare> iterator;
+    typedef bst_iterator<const T, const Node, Compare> const_iterator;
     typedef reverse_iterator<const_iterator> const_reverse_iterator;
     typedef reverse_iterator<iterator> reverse_iterator;
 public:
@@ -336,12 +212,21 @@ public:
         m_End = m_Allocator.allocate(1);
         m_Allocator.construct(m_End, Node(m_End, m_End, m_End));
     }
+    bst(const bst& other) : m_End(NULL)
+                          , m_Size(0)
+                          , m_Comp(other.m_Comp)
+                          , m_Allocator(other.m_Allocator)
+    {
+        m_End = m_Allocator.allocate(1);
+        m_Allocator.construct(m_End, Node(m_End, m_End, m_End));
+        copy_root(other.m_End->parent, other.m_End);
+    }
     virtual ~bst()
     {
         m_Allocator.destroy(m_End);
         m_Allocator.deallocate(m_End, 1);	
     }
-    Node* search_by_key(const value_type& value)
+    Node* search_by_key(const_reference value)
     {
         Node* node = m_End->parent;
         while (node != m_End)
@@ -361,7 +246,7 @@ public:
         }
         return node;
     }
-    pair<iterator, bool> insert_pair(value_type to_insert)
+    pair<iterator, bool> insert_pair(const_reference to_insert)
     {
         Node* new_node = m_Allocator.allocate(1);
         Node* prev_node = m_End;
@@ -398,14 +283,34 @@ public:
         {
             prev_node->left = new_node;
         }
-        m_End->left = get_left_node(m_End->parent);
-        m_End->right = get_right_node(m_End->parent);
+        update_left_right_add(new_node);
         ++m_Size;
         return make_pair(iterator(new_node, m_End, m_Comp), true);
     }
-    void remove_by_key(value_type to_remove)
+    void remove_by_key(const value_type& to_remove)
     {
-        remove_by_key_rec(m_End->parent, to_remove);
+        Node* node = search_by_key(to_remove);
+        if (node == m_End)
+        {
+            return ;
+        }
+        if (node->left != m_End && node->right != m_End)
+        {
+            Node* successor = get_left_node(node->right);
+            replace_double_children(node, successor);
+        }
+        else if (node->left != m_End)
+        {
+            replace_node_in_parent(node, node->left);
+        }
+        else if (node->right != m_End)
+        {
+            replace_node_in_parent(node, node->right);
+        }
+        else
+        {
+            replace_node_in_parent(node, m_End);
+        }
     }
     size_type size(void) const
     {
@@ -454,6 +359,36 @@ private:
     Compare m_Comp;
     Allocator m_Allocator;
 private:
+    void copy_root(Node *node, Node *other_end)
+    {
+        if (node != other_end)
+        {
+            insert_pair(node->value);
+            copy_root(node->left, other_end);
+            copy_root(node->right, other_end);
+        }
+    }
+
+    void update_left_right_add(Node* new_node)
+    {
+        if (m_End->left == m_End && m_End->right == m_End)
+        {
+            m_End->left = new_node;
+            m_End->right = new_node;
+        }
+        else
+        {
+            if (m_Comp(new_node->value.first, m_End->left->value.first))
+            {
+                m_End->left = new_node;
+            }
+            else if (m_Comp(m_End->right->value.first, new_node->value.first))
+            {
+                m_End->right = new_node;
+            }
+        }
+    }
+
     Node* get_left_node(Node* root)
     {
         while (root != m_End && root->left != m_End)
@@ -494,103 +429,83 @@ private:
         }
         new_node->parent = node->parent;
         
-        m_End->left = get_left_node(m_End->parent);
-        m_End->right = get_right_node(m_End->parent);
+        if (node == m_End->left)
+        {
+            m_End->left = get_left_node(m_End->parent);
+        }
+        if (node == m_End->right)
+        {
+            m_End->right = get_right_node(m_End->parent);
+        }
         
         m_Allocator.destroy(node);
         m_Allocator.deallocate(node, 1);
         --m_Size;
     }
 
-    void replace_double_children(Node*& to_remove, Node* new_node)
+    void replace_double_children(Node*& node, Node* new_node)
     {
         if (new_node->parent != m_End)
         {
-            if (new_node->parent != to_remove)
+            if (new_node->parent != node)
             {
                 new_node->parent->left = new_node->right;
             }
         }
-        new_node->parent = to_remove->parent;
-        if (to_remove->left != new_node)
+        new_node->parent = node->parent;
+        if (node->left != new_node)
         {
-            new_node->left = to_remove->left;
+            new_node->left = node->left;
         }
-        if (to_remove->right != new_node)
+        if (node->right != new_node)
         {
-            new_node->right = to_remove->right;
+            new_node->right = node->right;
         }
-        if (to_remove->parent != m_End)
+        if (node->parent != m_End)
         {
-            if (to_remove->parent->left == to_remove)
+            if (node->parent->left == node)
             {
-                to_remove->parent->left = new_node;
+                node->parent->left = new_node;
             }
-            else if (to_remove->parent->right == to_remove)
+            else if (node->parent->right == node)
             {
-                to_remove->parent->right = new_node;
+                node->parent->right = new_node;
             }
         }
         else
         {
             m_End->parent = new_node;
         }
-        if (to_remove->left != m_End && to_remove->left != new_node)
+        if (node->left != m_End && node->left != new_node)
         {
-            to_remove->left->parent = new_node;
+            node->left->parent = new_node;
         }
-        if (to_remove->right != m_End && to_remove->right != new_node)
+        if (node->right != m_End && node->right != new_node)
         {
-            to_remove->right->parent = new_node;
-        }
-
-        if (to_remove->parent != m_End)
-        {
-            to_remove->left = m_End;
-            to_remove->right = m_End;
-            to_remove->parent = new_node;
+            node->right->parent = new_node;
         }
 
-        m_End->left = get_left_node(m_End->parent);
-        m_End->right = get_right_node(m_End->parent);
+        if (node->parent != m_End)
+        {
+            node->left = m_End;
+            node->right = m_End;
+            node->parent = new_node;
+        }
 
-        m_Allocator.destroy(to_remove);
-        m_Allocator.deallocate(to_remove, 1);
+        if (node == m_End->left)
+        {
+            m_End->left = get_left_node(m_End->parent);
+        }
+        if (node == m_End->right)
+        {
+            m_End->right = get_right_node(m_End->parent);
+        }
+
+        m_Allocator.destroy(node);
+        m_Allocator.deallocate(node, 1);
         --m_Size;
     }
-
-    void remove_by_key_rec(Node* node, value_type to_remove)
-    {
-        if (m_Comp(to_remove.first, node->value.first))
-        {
-            remove_by_key_rec(node->left, to_remove);
-            return ;
-        }
-        if (m_Comp(node->value.first, to_remove.first))
-        {
-            remove_by_key_rec(node->right, to_remove);
-            return ;
-        }
-        if (node->left != m_End && node->right != m_End)
-        {
-            Node* successor = get_left_node(node->right);
-            replace_double_children(node, successor);
-        }
-        else if (node->left != m_End)
-        {
-            replace_node_in_parent(node, node->left);
-        }
-        else if (node->right != m_End)
-        {
-            replace_node_in_parent(node, node->right);
-        }
-        else
-        {
-            replace_node_in_parent(node, m_End);
-        }
-    }
 };
-
 
 }
 
