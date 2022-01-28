@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 00:10:21 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/26 21:19:02 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 10:37:38 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ public:
     {
         if (this != other)
         {
+            m_Allocator = other.m_Allocator;
             assign(other.begin(), other.end());
         }
         return *this;

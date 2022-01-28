@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:38:47 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/27 22:17:21 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 10:53:20 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include "../utils/functional.hpp"
 #include "../utils/utility.hpp"
 #include "../strings/string.hpp"
+#include "../algorithms/algorithm.hpp"
+
 #include "bst.hpp"
 
 namespace ft
@@ -112,10 +114,10 @@ public:
     }
     T& operator[]( const Key& key )
     {
-        const_iterator tmp = find(key);
+        iterator tmp = find(key);
         if (tmp == end())
         {
-            return insert(make_pair(key, T())).first->second;
+            return insert(make_pair(key, mapped_type())).first->second;
         }
         return tmp->second;
     }
@@ -186,16 +188,11 @@ public:
     }
     size_type count( const Key& key ) const
     {
-        const_iterator begin = begin();
-        const_iterator end = end();
-        for ( ; begin != end; ++begin)
+        if (find(key) == end())
         {
-            if (begin->first == key)
-            {
-                return (1);
-            }
+            return (0);
         }
-        return (0);
+        return (1);
     }
     iterator find( const Key& key )
     {
@@ -261,6 +258,55 @@ private:
     allocator_type m_Allocator;
     bst<value_type, key_compare> m_Bst;
 };
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator==( const map<Key,T,Compare,Alloc>& lhs,
+                 const map<Key,T,Compare,Alloc>& rhs )
+{
+    return lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator!=( const map<Key,T,Compare,Alloc>& lhs,
+                 const map<Key,T,Compare,Alloc>& rhs )
+{
+    return !(lhs == rhs);
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator<( const map<Key,T,Compare,Alloc>& lhs,
+                const map<Key,T,Compare,Alloc>& rhs )
+{
+    return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator<=( const map<Key,T,Compare,Alloc>& lhs,
+                 const map<Key,T,Compare,Alloc>& rhs )
+{
+    return !(rhs < lhs);
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator>( const map<Key,T,Compare,Alloc>& lhs,
+                const map<Key,T,Compare,Alloc>& rhs )
+{
+    return rhs < lhs;
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator>=( const map<Key,T,Compare,Alloc>& lhs,
+                 const map<Key,T,Compare,Alloc>& rhs )
+{
+    return !(lhs < rhs);
+}
+
+template< class Key, class T, class Compare, class Alloc >
+void swap( map<Key,T,Compare,Alloc>& lhs,
+           map<Key,T,Compare,Alloc>& rhs )
+{
+    lhs.swap(rhs);
+}
 
 }
 
