@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 16:43:39 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 21:41:29 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 22:24:33 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -410,10 +410,6 @@ private:
     {
         if (node->parent != m_End)
         {
-            if (m_End->parent == node)
-            {
-                m_End->parent = new_node;
-            }
             if (node == node->parent->left)
             {
                 node->parent->left = new_node;
