@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:38:47 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 21:38:30 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 21:52:28 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,7 +260,7 @@ public:
 private:
     key_compare m_Comp;
     allocator_type m_Allocator;
-    bst<value_type, key_compare> m_Bst;
+    bst<value_type, key_compare, typename allocator_type::template rebind<bst_node<value_type> >::other> m_Bst;
 };
 
 template< class Key, class T, class Compare, class Alloc >
