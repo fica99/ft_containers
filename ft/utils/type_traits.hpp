@@ -6,14 +6,18 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 13:09:33 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/26 20:11:31 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 22:03:04 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPE_TRAITS_HPP
 #define TYPE_TRAITS_HPP
 
+#ifdef __APPLE__
 #include <cstdint>
+#else
+#include <uchar.h>
+#endif
 
 namespace ft
 {
