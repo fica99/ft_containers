@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:38:47 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 22:29:25 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 23:21:21 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ public:
     }
     void erase( iterator first, iterator last )
     {
-        for (; first != last; )
+        for (; first != last;)
         {
             iterator tmp = first;
             ++first;

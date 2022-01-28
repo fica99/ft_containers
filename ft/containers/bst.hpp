@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 16:43:39 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 22:24:33 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 23:18:07 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -423,6 +423,7 @@ private:
         {
             m_End->parent = new_node;
         }
+        
         new_node->parent = node->parent;
         
         if (node == m_End->left)
@@ -433,7 +434,12 @@ private:
         {
             m_End->right = get_right_node(m_End->parent);
         }
-        
+
+        if (node == m_End->parent)
+        {
+            m_End->parent = new_node;
+        }
+
         m_Allocator.destroy(node);
         m_Allocator.deallocate(node, 1);
         --m_Size;
