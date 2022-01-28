@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 16:43:39 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/27 22:39:03 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 16:19:01 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,26 +127,20 @@ public:
             {
                 current = current->parent;
             }
-            m_Node = current;
         }
         else if (current == m_End)
         {
-            m_Node = current->left;
+            current = current->left;
         }
         else
         {
-            current = m_Node->left;
-            if (current == m_End->parent && current->left == m_End)
-            ;
-            else
+            current = m_Node->right;
+            while (current->left != m_End)
             {
-                while (current->right != m_End)
-                {
-                    current = current->right;
-                }
+                current = current->left;
             }
-            m_Node = current;
         }
+        m_Node = current;
         return *this;
     }
     bst_iterator operator++(int)
@@ -165,26 +159,20 @@ public:
             {
                 current = current->parent;
             }
-            m_Node = current;
         }
         else if (current == m_End)
         {
-            m_Node = current->right;
+            current = current->right;
         }
         else
         {
-            current = m_Node->right;
-            if (current == m_End->parent && current->right == m_End)
-            ;
-            else
+            current = m_Node->left;
+            while (current->right != m_End)
             {
-                while (current->left != m_End)
-                {
-                    current = current->left;
-                }
+                current = current->right;
             }
-            m_Node = current;
         }
+        m_Node = current;
         return *this;
     }
     bst_iterator operator--(int)
@@ -193,7 +181,7 @@ public:
         operator--();
         return (tmp);
     }
-//private:
+private:
     T* m_Node;
     T* m_End;
     Compare m_Comp;
@@ -258,26 +246,20 @@ public:
             {
                 current = current->parent;
             }
-            m_Node = current;
         }
         else if (current == m_End)
         {
-            m_Node = current->left;
+            current = current->left;
         }
         else
         {
-            current = m_Node->left;
-            if (current == m_End->parent && current->left == m_End)
-            ;
-            else
+            current = m_Node->right;
+            while (current->left != m_End)
             {
-                while (current->right != m_End)
-                {
-                    current = current->right;
-                }
+                current = current->left;
             }
-            m_Node = current;
         }
+        m_Node = current;
         return *this;
     }
     bst_const_iterator operator++(int)
@@ -292,30 +274,24 @@ public:
         if (current->left == m_End)
         {
             current = m_Node->parent;
-            while (current != m_End && !m_Comp(current->value.first, m_Node->value.second))
+            while (current != m_End && !m_Comp(current->value.first, m_Node->value.first))
             {
                 current = current->parent;
             }
-            m_Node = current;
         }
         else if (current == m_End)
         {
-            m_Node = current->right;
+            current = current->right;
         }
         else
         {
-            current = m_Node->right;
-            if (current == m_End->parent && current->right == m_End)
-            ;
-            else
+            current = m_Node->left;
+            while (current->right != m_End)
             {
-                while (current->left != m_End)
-                {
-                    current = current->left;
-                }
+                current = current->right;
             }
-            m_Node = current;
         }
+        m_Node = current;
         return *this;
     }
     bst_const_iterator operator--(int)
@@ -341,7 +317,6 @@ template <
 public:
     typedef T value_type;
     typedef Allocator allocator_type;
-    typedef Node node_type;
     typedef Compare key_compare;
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
@@ -359,7 +334,7 @@ public:
                                                             , m_Allocator(allocator)
     {
         m_End = m_Allocator.allocate(1);
-        m_Allocator.construct(m_End, node_type(m_End, m_End, m_End));
+        m_Allocator.construct(m_End, Node(m_End, m_End, m_End));
     }
     virtual ~bst()
     {
@@ -368,7 +343,7 @@ public:
     }
     Node* search_by_key(const value_type& value)
     {
-        node_type* node = m_End->parent;
+        Node* node = m_End->parent;
         while (node != m_End)
         {
             if (m_Comp(value.first, node->value.first))
@@ -388,9 +363,9 @@ public:
     }
     pair<iterator, bool> insert_pair(value_type to_insert)
     {
-        node_type* new_node = m_Allocator.allocate(1);
-        node_type* prev_node = m_End;
-        node_type * start_node = m_End->parent;
+        Node* new_node = m_Allocator.allocate(1);
+        Node* prev_node = m_End;
+        Node * start_node = m_End->parent;
         bool side = true;
         while (start_node != m_End)
         {
@@ -407,7 +382,7 @@ public:
             }
             else
             {
-                return make_pair(iterator(start_node, m_End), false);
+                return make_pair(iterator(start_node, m_End, m_Comp), false);
             }
         }
         m_Allocator.construct(new_node, Node(to_insert, prev_node, m_End, m_End));
@@ -426,7 +401,7 @@ public:
         m_End->left = get_left_node(m_End->parent);
         m_End->right = get_right_node(m_End->parent);
         ++m_Size;
-        return make_pair(iterator(new_node, m_End), true);
+        return make_pair(iterator(new_node, m_End, m_Comp), true);
     }
     void remove_by_key(value_type to_remove)
     {
@@ -457,7 +432,7 @@ public:
     {
         if (this != &other)
         {
-            node_type* tmp = m_End;
+            Node* tmp = m_End;
             size_type tmp_size = m_Size;
             Compare tmp_comp = m_Comp;
             Allocator tmp_allocator = m_Allocator;
@@ -474,12 +449,12 @@ public:
         }
     }
 private:
-    node_type* m_End;
+    Node* m_End;
     size_type m_Size;
     Compare m_Comp;
     Allocator m_Allocator;
 private:
-    node_type* get_left_node(node_type* root)
+    Node* get_left_node(Node* root)
     {
         while (root != m_End && root->left != m_End)
         {
@@ -487,7 +462,7 @@ private:
         }
         return (root);
     }
-    node_type* get_right_node(node_type* root)
+    Node* get_right_node(Node* root)
     {
         while (root != m_End && root->right != m_End)
         {
@@ -496,7 +471,7 @@ private:
         return (root);
     }
 
-    void replace_node_in_parent(node_type* node, node_type* new_node)
+    void replace_node_in_parent(Node* node, Node* new_node)
     {
         if (node->parent != m_End)
         {
@@ -517,16 +492,17 @@ private:
         {
             m_End->parent = new_node;
         }
+        new_node->parent = node->parent;
+        
         m_End->left = get_left_node(m_End->parent);
         m_End->right = get_right_node(m_End->parent);
-        --m_Size;
-
-        new_node->parent = node->parent;
+        
         m_Allocator.destroy(node);
         m_Allocator.deallocate(node, 1);
+        --m_Size;
     }
 
-    void replace_double_children(node_type*& to_remove, node_type* new_node)
+    void replace_double_children(Node*& to_remove, Node* new_node)
     {
         if (new_node->parent != m_End)
         {
@@ -577,14 +553,13 @@ private:
 
         m_End->left = get_left_node(m_End->parent);
         m_End->right = get_right_node(m_End->parent);
-        --m_Size;
 
         m_Allocator.destroy(to_remove);
         m_Allocator.deallocate(to_remove, 1);
+        --m_Size;
     }
 
-
-    void remove_by_key_rec(node_type* node, value_type to_remove)
+    void remove_by_key_rec(Node* node, value_type to_remove)
     {
         if (m_Comp(to_remove.first, node->value.first))
         {
@@ -598,9 +573,8 @@ private:
         }
         if (node->left != m_End && node->right != m_End)
         {
-            node_type* successor = get_left_node(node->right);
+            Node* successor = get_left_node(node->right);
             replace_double_children(node, successor);
-            return ;
         }
         else if (node->left != m_End)
         {

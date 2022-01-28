@@ -1,4 +1,4 @@
-./tests/tester
+tests/school_tests/tester
 # Prerequisites
 *.d
 

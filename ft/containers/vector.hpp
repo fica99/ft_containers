@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 00:10:21 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 10:37:38 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 12:41:43 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,7 +338,7 @@ public:
         if (this != &other)
         {
             pointer ptr_copy = m_Arr;
-             size_type size_copy = m_Size;
+            size_type size_copy = m_Size;
             size_type capacity_copy = m_Capacity;
             allocator_type allocator_copy = m_Allocator;
 
