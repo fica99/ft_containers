@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 00:10:21 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 12:41:43 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 21:58:16 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -371,7 +371,7 @@ private:
 };
 
 template < class T, class Alloc >
-bool operator==(const std::vector<T, Alloc>& lhs, const std::vector<T, Alloc>& rhs)
+bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
     if (lhs.size() != rhs.size())
     {
@@ -381,37 +381,37 @@ bool operator==(const std::vector<T, Alloc>& lhs, const std::vector<T, Alloc>& r
 }
 
 template < class T, class Alloc >
-bool operator!=(const std::vector<T, Alloc>& lhs, const std::vector<T, Alloc>& rhs)
+bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
     return !(lhs == rhs);
 }
 
 template < class T, class Alloc >
-bool operator<(const std::vector<T, Alloc>& lhs, const std::vector<T, Alloc>& rhs)
+bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
     return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template < class T, class Alloc>
-bool operator<=(const std::vector<T, Alloc>& lhs, const std::vector<T, Alloc>& rhs)
+bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
     return !(rhs < lhs);
 }
 
 template < class T, class Alloc >
-bool operator>(const std::vector<T, Alloc>& lhs, const std::vector<T, Alloc>& rhs)
+bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
     return rhs < lhs;
 }
 
 template < class T, class Alloc >
-bool operator>=(const std::vector<T, Alloc>& lhs, const std::vector<T, Alloc>& rhs)
+bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
     return !(lhs < rhs);
 }
 
 template < class T, class Alloc >
-void swap(std::vector<T, Alloc>& lhs, std::vector<T, Alloc>& rhs)
+void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs)
 {
     lhs.swap(rhs);
 }
