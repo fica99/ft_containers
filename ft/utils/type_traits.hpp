@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 13:09:33 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 22:03:04 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/28 22:05:54 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,13 @@ struct is_integral_type<unsigned char> : public is_integral_base<true, unsigned 
 template <>
 struct is_integral_type<signed char> : public is_integral_base<true, signed char> { };
 
+#ifdef __APPLE__
 template <>
 struct is_integral_type<char16_t> : public is_integral_base<true, char16_t> { };
 
 template <>
 struct is_integral_type<char32_t> : public is_integral_base<true, char32_t> { };
+#endif
 
 template <>
 struct is_integral_type<wchar_t> : public is_integral_base<true, wchar_t> { };
