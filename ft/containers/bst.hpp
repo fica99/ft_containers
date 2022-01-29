@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 16:43:39 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/29 11:25:39 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 11:44:29 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,7 +256,6 @@ public:
     }
     pair<iterator, bool> insert_pair(const_reference to_insert)
     {
-        Node* new_node = m_Allocator.allocate(1);
         Node* prev_node = m_End;
         Node * start_node = m_End->parent;
         bool side = true;
@@ -278,6 +277,7 @@ public:
                 return pair<iterator, bool>(iterator(start_node, m_End, m_Comp), false);
             }
         }
+        Node* new_node = m_Allocator.allocate(1);
         m_Allocator.construct(new_node, Node(to_insert, prev_node, m_End, m_End));
         if (prev_node == m_End)
         {
