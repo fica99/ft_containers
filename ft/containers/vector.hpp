@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 00:10:21 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/29 09:18:02 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 12:23:55 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,6 +266,10 @@ public:
     }
     void pop_back(void)
     {
+        if (!m_Size)
+        {
+            return;
+        }
         --m_Size;
         m_Allocator.destroy(m_Arr + m_Size);
     }
@@ -329,10 +333,14 @@ private:
     void create_data(typename iterator_traits<InputIt>::difference_type capacity, InputIt first, InputIt last)
     {
         vector<T, Allocator> res;
-        size_t count = 0;
+        typename iterator_traits<InputIt>::difference_type count = 0;
         for (InputIt tmp = first; tmp != last; ++tmp)
         {
             ++count;
+        }
+        if (count > capacity)
+        {
+            capacity = count;
         }
         res.m_Allocator = m_Allocator;
         res.m_Size = count;
@@ -388,7 +396,17 @@ bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
     {
         return false;
     }
-    return equal(lhs.begin(), lhs.end(), rhs.begin());
+    typename vector<T, Alloc>::const_iterator first1 = lhs.begin();
+    typename vector<T, Alloc>::const_iterator first2 = rhs.begin();
+    typename vector<T, Alloc>::const_iterator last1 = lhs.end();
+    for (; first1 != last1; ++first1, ++first2)
+    {
+        if (*first1 != *first2)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 template < class T, class Alloc >
@@ -400,7 +418,22 @@ bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 template < class T, class Alloc >
 bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
-    return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    typename vector<T, Alloc>::const_iterator first1 = lhs.begin();
+    typename vector<T, Alloc>::const_iterator first2 = rhs.begin();
+    typename vector<T, Alloc>::const_iterator last1 = lhs.end();
+    typename vector<T, Alloc>::const_iterator last2 = rhs.end();
+    for (; (first1 != last1) && (first2 != last2); ++first1, ++first2)
+    {
+        if (*first1 < *first2)
+        {
+            return true;
+        }
+        if (*first2 < *first1)
+        {
+            return false;
+        }
+    }
+    return (first1 == last1) && (first2 != last2);
 }
 
 template < class T, class Alloc>

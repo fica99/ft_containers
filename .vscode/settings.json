@@ -39,6 +39,10 @@
 		"version": "cpp",
 		"filesystem": "cpp",
 		"random": "cpp",
-		"iostream": "cpp"
+		"iostream": "cpp",
+		"__functional_base": "cpp",
+		"__locale": "cpp",
+		"tuple": "cpp",
+		"*.ipp": "cpp"
 	}
 }
