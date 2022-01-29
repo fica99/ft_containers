@@ -37,6 +37,8 @@
 		"__string": "cpp",
 		"__config": "cpp",
 		"version": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"random": "cpp",
+		"iostream": "cpp"
 	}
 }

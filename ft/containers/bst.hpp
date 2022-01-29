@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 16:43:39 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/29 01:36:17 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 11:25:39 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ public:
     typedef T* pointer;
     typedef T& reference;
 
+    template <class, class, class>
+    friend class bst_iterator;
     bst_iterator(Node* node = NULL, Node* end = NULL,
         const Compare& comp = Compare()) : m_Node(node)
                                          , m_End(end)
@@ -97,11 +99,13 @@ public:
         }
         return (*this);
     }
-    bool operator==(const bst_iterator& other)
+    template <typename U>
+    bool operator==(const bst_iterator<U, Node, Compare>& other) const
     {
         return m_Node == other.m_Node;
     }
-    bool operator!=(const bst_iterator& other)
+    template <typename U>
+    bool operator!=(const bst_iterator<U, Node, Compare>& other) const
     {
         return m_Node != other.m_Node;
     }
@@ -126,7 +130,7 @@ public:
         }
         else if (current == m_End)
         {
-            current = current->left;
+            current = current->right;
         }
         else
         {
@@ -177,6 +181,10 @@ public:
         operator--();
         return (tmp);
     }
+    operator bst_iterator<const T, Node, Compare>(void) const
+    {
+        return bst_iterator<const T, Node, Compare>(m_Node, m_End, m_Comp);
+    }
 protected:
     Node* m_Node;
     Node* m_End;
@@ -199,7 +207,7 @@ public:
     typedef const value_type& const_reference;
     typedef bst_node<value_type> Node;
     typedef bst_iterator<T, Node, Compare> iterator;
-    typedef bst_iterator<const T, const Node, Compare> const_iterator;
+    typedef bst_iterator<const T, Node, Compare> const_iterator;
     typedef reverse_iterator<const_iterator> const_reverse_iterator;
     typedef reverse_iterator<iterator> reverse_iterator;
 public:
@@ -419,13 +427,18 @@ private:
                 node->parent->right = new_node;
             }
         }
-        else
+
+        if (new_node != m_End)
+        {
+            new_node->parent = node->parent;
+        }
+
+
+        if (node == m_End->parent)
         {
             m_End->parent = new_node;
         }
-        
-        new_node->parent = node->parent;
-        
+
         if (node == m_End->left)
         {
             m_End->left = get_left_node(m_End->parent);
@@ -433,11 +446,6 @@ private:
         if (node == m_End->right)
         {
             m_End->right = get_right_node(m_End->parent);
-        }
-
-        if (node == m_End->parent)
-        {
-            m_End->parent = new_node;
         }
 
         m_Allocator.destroy(node);
