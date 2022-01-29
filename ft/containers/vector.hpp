@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 00:10:21 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 21:58:16 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 09:08:57 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,64 +52,80 @@ public:
     explicit vector(size_type count,
                     const_reference value = value_type(),
                     const allocator_type& allocator = allocator_type()) : m_Arr(NULL)
-                                                                        , m_Size(count)
-                                                                        , m_Capacity(count)
+                                                                        , m_Size(0)
+                                                                        , m_Capacity(0)
                                                                         , m_Allocator(allocator)
     {
-        m_Arr = m_Allocator.allocate(count);
-        for (size_type i = 0; i < count; ++i)
-        {
-            m_Allocator.construct(m_Arr + i, value);
-        }
+        create_data(count, value);
     }
     template <class InputIt>
-    vector(InputIt first, InputIt last,
+    vector(typename ft::enable_if<!std::numeric_limits<InputIt>::is_integer, InputIt>::type first, InputIt last,
                     const allocator_type& allocator = allocator_type()) : m_Arr(NULL)
                                                                         , m_Size(0)
                                                                         , m_Capacity(0)
                                                                         , m_Allocator(allocator)
     {
-        assign(first, last);
+        create_data(do_distance(first, last), first, last);
     }
     vector(const vector& other) : m_Arr(NULL)
                                 , m_Size(0)
                                 , m_Capacity(0)
                                 , m_Allocator(other.m_Allocator)
     {
-        assign(other.begin(), other.end());
+        *this = other;
     }
     ~vector()
     {
-        clear();
-        m_Allocator.deallocate(m_Arr, m_Capacity);
+        destroy_data();
     }
     vector& operator=(const vector& other)
     {
-        if (this != other)
+        if (this != &other)
         {
-            m_Allocator = other.m_Allocator;
-            assign(other.begin(), other.end());
+            const_iterator first = other.begin();
+            const_iterator last = other.end();
+            typename iterator_traits<const_iterator>::difference_type len = distance(first, last);
+            if (static_cast<size_type>(len) > m_Capacity)
+            {
+                create_data(len, first, last);
+            }
+            else
+            {
+                create_data(m_Capacity, first, last);
+            }
         }
         return *this;
     }
     void assign(size_type count, const value_type &value)
     {
-        clear();
-        reserve(count);
-        for (size_type i = 0; i < count; ++i)
+        if (count > m_Capacity)
         {
-            m_Allocator.construct(m_Arr + i, value);
+            create_data(count, value);
+        }
+        else
+        {
+            clear();
+            for (size_type i = 0; i < count; ++i, ++m_Size)
+            {
+                m_Allocator.construct(m_Arr + i, value);
+            }
         }
     }
     template <class InputIt>
-    void assign(InputIt first, InputIt last)
+    void assign(typename ft::enable_if<!std::numeric_limits<InputIt>::is_integer, InputIt>::type first, InputIt last)
     {
-        difference_type diff = distance(first, last);
-        clear();
-        reserve(static_cast<size_type>(diff));
-        for (size_t i = 0; first != last; ++first, ++i)
+        difference_type len = do_distance(first, last);
+        if (static_cast<size_type>(len) > m_Capacity)
         {
-            m_Allocator.construct(m_Arr + i, *first);
+            create_data(len, first, last);
+        }
+        else
+        {
+            clear();
+            for (; first != last; ++first, ++m_Size)
+            {
+                m_Allocator.construct(m_Arr + m_Size, *first);
+            }
         }
     }
     allocator_type get_allocator() const { return m_Allocator; }
@@ -148,24 +164,11 @@ public:
         {
             if (new_cap > max_size())
             {
-                throw std::length_error("vector::reserve");
+                throw std::length_error("vector::reserve(size_type new_cap) 'new_cap' exceeds maximum supported size");
             }
             else
             {
-                pointer new_arr = m_Allocator.allocate(new_cap);
-                size_type size = m_Size;
-                for (size_type i = 0; i < m_Size; ++i)
-                {
-                    m_Allocator.construct(new_arr + i, m_Arr[i]);
-                }
-                clear();
-                if (m_Arr)
-                {
-                    m_Allocator.deallocate(m_Arr, m_Capacity);
-                }
-                m_Arr = new_arr;
-                m_Capacity = new_cap;
-                m_Size = size;
+                create_data(new_cap, begin(), end());
             }
         }
     }
@@ -180,110 +183,54 @@ public:
     }
     iterator insert(iterator pos, const T &value)
     {
-        difference_type pos_i = &*pos - m_Arr;
+        typename iterator_traits<iterator>::difference_type pos_i = pos - begin();
         insert(pos, 1, value);
-        return iterator(m_Arr + pos_i);
+        return iterator(begin() + pos_i);
     }
-    void insert(iterator pos, size_type count, const T &value)
+    void insert(iterator pos, size_type count, const T& value)
     {
-        if (count != 0)
+        typename iterator_traits<iterator>::difference_type idx = pos - begin();
+        typename iterator_traits<iterator>::difference_type old_end_idx = end() - begin();
+        iterator old_end = end();
+        iterator ends;
+        
+        resize(m_Size + count);
+        ends = end();
+        pos = begin() + idx;
+        old_end = begin() + old_end_idx;
+        for (; old_end != pos; )
         {
-            difference_type pos_i = &*pos - m_Arr;
-            if (m_Capacity < m_Size + count)
-            {
-                size_type new_capacity = ((m_Capacity > 0) ? (m_Capacity * 2) : 1);
-                while (new_capacity < m_Size + count)
-                {
-                    new_capacity *= 2;
-                }
-                pointer new_arr = m_Allocator.allocate(new_capacity);
-                for (size_type i = 0; i < static_cast<size_type>(pos_i); ++i)
-                {
-                    m_Allocator.construct(new_arr + i, m_Arr[i]);
-                }
-                for (size_type i = 0; i < count; ++i)
-                {
-                    m_Allocator.construct(new_arr + pos_i + i, value);
-                }
-                for (size_type i = 0; i < m_Size - static_cast<size_type>(pos_i); ++i)
-                {
-                    m_Allocator.construct(new_arr + (m_Size - i) + count, m_Arr[m_Size - (i + 1)]);
-                }
-                size_type size = m_Size + count;
-                clear();
-                if (m_Arr)
-                {
-                    m_Allocator.deallocate(m_Arr, m_Capacity);
-                }
-                m_Size = size;
-                m_Capacity = new_capacity;
-                m_Arr = new_arr;
-            }
-            else
-            {
-                for (size_type i = 0; i < m_Size - static_cast<size_type>(pos_i); ++i)
-                {
-                    m_Allocator.construct(m_Arr + (m_Size - i) + count, m_Arr[m_Size - (i + 1)]);
-                }
-                for (size_type i = 0; i < count; ++i)
-                {
-                    m_Allocator.destroy(m_Arr + pos_i + i);
-                    m_Allocator.construct(m_Arr + pos_i + i, value);
-                }
-                m_Size += count;
-            }
+            --ends;
+            --old_end;
+            *ends = *old_end;
+        }
+        for (size_type i = 0; i < count; ++i, ++pos)
+        {
+            *pos = value;
         }
     }
     template <class InputIt>
-    void insert(iterator pos, InputIt first, InputIt last)
+    void insert(iterator pos, InputIt first, typename ft::enable_if<!std::numeric_limits<InputIt>::is_integer, InputIt>::type last)
     {
-        difference_type count = distance(first, last);
-        if (count != 0)
+        typename iterator_traits<iterator>::difference_type idx = pos - begin();
+        typename iterator_traits<iterator>::difference_type old_end_idx = end() - begin();
+        iterator old_end = end();
+        iterator ends;
+        
+        resize(m_Size + do_distance(first, last));
+        ends = end();
+        pos = begin() + idx;
+        old_end = begin() + old_end_idx;
+        for (; old_end != pos; )
         {
-            difference_type pos_i = &*pos - m_Arr;
-            if (m_Capacity < m_Size + static_cast<size_type>(count))
-            {
-                size_type new_capacity = ((m_Capacity > 0) ? (m_Capacity * 2) : 1);
-                while (new_capacity < m_Size + count)
-                {
-                    new_capacity *= 2;
-                }
-                pointer new_arr = m_Allocator.allocate(new_capacity);
-                for (size_type i = 0; i < static_cast<size_type>(pos_i); ++i)
-                {
-                    m_Allocator.construct(new_arr + i, m_Arr[i]);
-                }
-                for (size_type i = 0; i < static_cast<size_type>(count); ++i, ++first)
-                {
-                    m_Allocator.construct(new_arr + pos_i + i, *first);
-                }
-                for (size_type i = 0; i < m_Size - static_cast<size_type>(pos_i); ++i)
-                {
-                    m_Allocator.construct(new_arr + (m_Size - i) + static_cast<size_type>(count), m_Arr[m_Size - (i + 1)]);
-                }
-                size_type size = m_Size + static_cast<size_type>(count);
-                clear();
-                if (m_Arr)
-                {
-                    m_Allocator.deallocate(m_Arr, m_Capacity);
-                }
-                m_Size = size;
-                m_Capacity = new_capacity;
-                m_Arr = new_arr;
-            }
-            else
-            {
-                for (size_type i = 0; i < m_Size - static_cast<size_type>(pos_i); ++i)
-                {
-                    m_Allocator.construct(m_Arr + (m_Size - i) + static_cast<size_type>(count), m_Arr[m_Size - (i + 1)]);
-                }
-                for (size_type i = 0; i < static_cast<size_type>(count); ++i, ++first)
-                {
-                    m_Allocator.destroy(m_Arr + pos_i + i);
-                    m_Allocator.construct(m_Arr + pos_i + i, *first);
-                }
-                m_Size += static_cast<size_type>(count);
-            }
+            --ends;
+            --old_end;
+            *ends = *old_end;
+        }
+        for (; first != last; ++first)
+        {
+            *pos = *first;
+            ++pos;
         }
     }
     iterator erase(iterator pos)
@@ -292,27 +239,29 @@ public:
     }
     iterator erase(iterator first, iterator last)
     {
-        difference_type count = distance(first, last);
-        difference_type pos_i = first.base() - m_Arr;
-        for (size_t i = 0; i < static_cast<size_type>(count); ++i)
+        typename iterator_traits<iterator>::difference_type count = distance(first, last);
+        iterator tmp = first;
+        for (; first != end(); ++first, ++last)
         {
-            m_Allocator.destroy(m_Arr + pos_i + i);
+            *first = *last;
         }
-        for (size_type i = 0; i < m_Size - static_cast<size_type>(pos_i + count); ++i)
+        for (size_type i = 0; i < static_cast<size_type>(count); ++i)
         {
-            m_Allocator.construct(m_Arr + pos_i + i, m_Arr[static_cast<size_type>(pos_i + count) + i]);
+            m_Allocator.destroy(m_Arr + (--m_Size));
         }
-        m_Size -= static_cast<size_type>(count);
+        return tmp;
     }
     void push_back(const T& value)
     {
         if (m_Size == m_Capacity)
         {
-            size_type new_capacity = ((m_Capacity > 0) ? (m_Capacity * 2) : 1);
-            reserve(new_capacity);
+            resize(m_Size + 1, value);
         }
-        m_Allocator.construct(m_Arr + m_Size, value);
-        ++m_Size;
+        else
+        {
+            m_Allocator.construct(m_Arr + m_Size, value);
+            ++m_Size;
+        }
     }
     void pop_back(void)
     {
@@ -323,38 +272,99 @@ public:
     {
         if (count < m_Size)
         {
-            for (; m_Size > count;)
+            for (; count < m_Size;)
             {
-                pop_back();
+                --m_Size;
+                m_Allocator.destroy(m_Arr + m_Size);
             }
         }
         else
         {
-            insert(end(), count - m_Size, value);
+            if (count <= m_Capacity * 2)
+            {
+                reserve(m_Capacity * 2);
+            }
+            else
+            {
+                reserve(count);
+            }
+            for (; m_Size < count; ++m_Size)
+            {
+                m_Allocator.construct(m_Arr + m_Size, value);
+            }
         }
     }
     void swap(vector &other)
     {
-        if (this != &other)
-        {
-            pointer ptr_copy = m_Arr;
-            size_type size_copy = m_Size;
-            size_type capacity_copy = m_Capacity;
-            allocator_type allocator_copy = m_Allocator;
-
-            m_Arr = other.m_Arr;
-            m_Size = other.m_Size;
-            m_Capacity = other.m_Capacity;
-            m_Allocator = other.m_Allocator;
-
-            other.m_Arr = ptr_copy;
-            other.m_Size = size_copy;
-            other.m_Capacity = capacity_copy;
-            other.m_Allocator = allocator_copy;
-        }
+        vector<T, Allocator> tmp;
+        tmp.copy_content(other);
+        other.copy_content(*this);
+        copy_content(tmp);
     }
 
 private:
+    template <class InputIt>
+    difference_type do_distance(InputIt first, InputIt last)
+    {
+        difference_type len = 0;
+        for (InputIt tmp = first; tmp != last; ++tmp)
+        {
+            ++len;
+        }
+        return len;
+    }
+    void create_data(size_type size, const value_type &val)
+    {
+        destroy_data();
+        m_Arr = m_Allocator.allocate(size);
+        for (size_type i = 0; i < size; ++i)
+        {
+            m_Allocator.construct(m_Arr + i, val);
+        }
+        m_Size = size;
+        m_Capacity = size;
+    }
+    template <class InputIt>
+    void create_data(typename iterator_traits<InputIt>::difference_type capacity, InputIt first, InputIt last)
+    {
+        vector<T, Allocator> res;
+        size_t count = 0;
+        for (InputIt tmp = first; tmp != last; ++tmp)
+        {
+            ++count;
+        }
+        res.m_Allocator = m_Allocator;
+        res.m_Size = count;
+        res.m_Capacity = capacity;
+        res.m_Arr = res.m_Allocator.allocate(capacity);
+        for (size_type i = 0; first != last; ++first, ++i)
+        {
+            res.m_Allocator.construct(res.m_Arr + i, *first);
+        }
+        destroy_data();
+        copy_content(res);
+    }
+    void copy_content(vector<T, Allocator>& other) {
+        m_Arr = other.m_Arr;
+        m_Allocator = other.m_Allocator;
+        m_Size = other.m_Size;
+        m_Capacity = other.m_Capacity;
+        other.m_Arr = NULL;
+        other.m_Size = 0;
+        other.m_Capacity = 0;
+    }
+    void destroy_data(void)
+    {
+        if (!m_Arr)
+        {
+            return;
+        }
+        clear();
+        m_Allocator.deallocate(m_Arr, m_Capacity);
+        m_Arr = NULL;
+        m_Size = 0;
+        m_Capacity = 0;
+    }
     void range_check(size_type pos) const
     {
         if (pos >= m_Size)

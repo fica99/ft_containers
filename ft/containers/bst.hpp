@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 16:43:39 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 23:18:07 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 01:36:17 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,14 +68,14 @@ public:
 
 
 template <typename T, typename Node, class Compare>
-class bst_iterator : public iterator<bidirectional_iterator_tag, T>
+class bst_iterator
 {
 public:
     typedef T value_type;
-    typedef typename iterator<bidirectional_iterator_tag, value_type>::iterator_category iterator_category;
-    typedef typename iterator<bidirectional_iterator_tag, value_type>::difference_type difference_type;
-    typedef typename iterator<bidirectional_iterator_tag, value_type>::pointer pointer;
-    typedef typename iterator<bidirectional_iterator_tag, value_type>::reference reference;
+    typedef bidirectional_iterator_tag iterator_category;
+    typedef std::ptrdiff_t difference_type;
+    typedef T* pointer;
+    typedef T& reference;
 
     bst_iterator(Node* node = NULL, Node* end = NULL,
         const Compare& comp = Compare()) : m_Node(node)
@@ -226,7 +226,7 @@ public:
         m_Allocator.destroy(m_End);
         m_Allocator.deallocate(m_End, 1);	
     }
-    Node* search_by_key(const_reference value)
+    Node* search_by_key(const_reference value) const
     {
         Node* node = m_End->parent;
         while (node != m_End)
@@ -267,7 +267,7 @@ public:
             }
             else
             {
-                return make_pair(iterator(start_node, m_End, m_Comp), false);
+                return pair<iterator, bool>(iterator(start_node, m_End, m_Comp), false);
             }
         }
         m_Allocator.construct(new_node, Node(to_insert, prev_node, m_End, m_End));
@@ -285,7 +285,7 @@ public:
         }
         update_left_right_add(new_node);
         ++m_Size;
-        return make_pair(iterator(new_node, m_End, m_Comp), true);
+        return pair<iterator, bool>(iterator(new_node, m_End, m_Comp), true);
     }
     void remove_by_key(const value_type& to_remove)
     {

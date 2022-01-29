@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/23 23:32:59 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/27 15:31:16 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 09:08:04 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,14 @@ namespace ft
 {
 
 template < typename T >
-class random_access_iterator : public iterator<
-                                          random_access_iterator_tag
-                                        , T
-                                            >{
+class random_access_iterator
+{
 public:
-    typedef typename iterator<random_access_iterator_tag, T>::iterator_category iterator_category;
-    typedef typename iterator<random_access_iterator_tag, T>::value_type value_type;
-    typedef typename iterator<random_access_iterator_tag, T>::difference_type difference_type;
-    typedef typename iterator<random_access_iterator_tag, T>::pointer pointer;
-    typedef typename iterator<random_access_iterator_tag, T>::reference reference;
+    typedef random_access_iterator_tag iterator_category;
+    typedef T value_type;
+    typedef std::ptrdiff_t difference_type;
+    typedef T* pointer;
+    typedef T& reference;
     explicit random_access_iterator(T* ptr = NULL) : m_Ptr(ptr) { }
     random_access_iterator(const random_access_iterator& other) : m_Ptr(other.m_Ptr) { }
     random_access_iterator &operator=(const random_access_iterator& other)
@@ -65,8 +63,8 @@ public:
         --m_Ptr;
         return tmp;
     }
-    random_access_iterator operator+(difference_type diff) const { return m_Ptr + diff; }
-    random_access_iterator operator-(difference_type diff) const { return m_Ptr - diff; }
+    random_access_iterator operator+(difference_type diff) const { return random_access_iterator(m_Ptr + diff); }
+    random_access_iterator operator-(difference_type diff) const { return random_access_iterator(m_Ptr - diff); }
     random_access_iterator& operator+=(difference_type diff)
     {
         m_Ptr += diff;
@@ -126,6 +124,12 @@ random_access_iterator<T> operator+(typename random_access_iterator<T>::differen
 
 template < typename T >
 typename random_access_iterator<T>::difference_type operator-(const random_access_iterator<T>& lhs, const random_access_iterator<T>& rhs)
+{
+    return (lhs.base() - rhs.base());
+}
+
+template < typename T1, typename T2 >
+typename random_access_iterator<T1>::difference_type operator-(const random_access_iterator<T1>& lhs, const random_access_iterator<T2>& rhs)
 {
     return (lhs.base() - rhs.base());
 }

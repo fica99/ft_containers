@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:51:51 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/26 21:28:56 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 00:54:33 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ public:
     typedef typename Container::size_type size_type;
     typedef typename Container::reference reference;
     typedef typename Container::const_reference const_reference;
-    explicit stack(const container_type &cont = Container()) : c(cont) {}
+    explicit stack(const container_type &cont = container_type()) : c(cont) {}
     stack(const stack& other) : c(other.c) {}
     ~stack(void) {}
     stack& operator=(const stack& other)

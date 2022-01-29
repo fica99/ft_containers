@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:38:47 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/28 23:21:21 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 00:35:13 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,7 @@ public:
             m_Allocator = other.m_Allocator;
             m_Comp = other.m_Comp;
             clear();
-            ~m_Bst();
-            m_Bst(other.m_Bst);
+            insert(other.begin(), other.end());
         }
         return *this;
     }
@@ -121,7 +120,7 @@ public:
         iterator tmp = find(key);
         if (tmp == end())
         {
-            return insert(make_pair(key, mapped_type())).first->second;
+            return insert(value_type(key, mapped_type())).first->second;
         }
         return tmp->second;
     }
@@ -176,7 +175,7 @@ public:
         {
             return (0);
         }
-        m_Bst.remove_by_key(make_pair(key, mapped_type()));
+        m_Bst.remove_by_key(value_type(key, mapped_type()));
         return (1);
     }
     void swap( map& other )
@@ -202,11 +201,11 @@ public:
     }
     iterator find( const Key& key )
     {
-        return iterator(m_Bst.search_by_key(make_pair(key, mapped_type())), m_Bst.end());
+        return iterator(m_Bst.search_by_key(value_type(key, mapped_type())), m_Bst.end());
     }
     const_iterator find( const Key& key ) const
     {
-        return const_iterator(m_Bst.search_by_key(make_pair(key, mapped_type())), m_Bst.end());
+        return const_iterator(m_Bst.search_by_key(value_type(key, mapped_type())), m_Bst.end());
     }
     pair<iterator,iterator> equal_range( const Key& key )
     {
@@ -218,8 +217,8 @@ public:
     }
     iterator lower_bound( const Key& key )
     {
-        iterator begin = begin();
-        iterator end = end();
+        iterator begin = m_Bst.begin();
+        iterator end = m_Bst.end();
         for ( ; begin != end; ++begin)
         {
             if (!m_Comp(begin->first, key))
@@ -231,12 +230,21 @@ public:
     }
     const_iterator lower_bound( const Key& key ) const
     {
-        return const_iterator(lower_bound(key));
+        const_iterator begin = m_Bst.begin();
+        const_iterator end = m_Bst.end();
+        for ( ; begin != end; ++begin)
+        {
+            if (!m_Comp(begin->first, key))
+            {
+                break;
+            }
+        }
+        return begin;
     }
     iterator upper_bound( const Key& key )
     {
-        iterator begin = begin();
-        iterator end = end();
+        iterator begin = m_Bst.begin();
+        iterator end = m_Bst.end();
         for ( ; begin != end; ++begin)
         {
             if (!m_Comp(key, begin->first))
@@ -248,7 +256,16 @@ public:
     }
     const_iterator upper_bound( const Key& key ) const
     {
-        return const_iterator(upper_bound(key));
+        const_iterator begin = m_Bst.begin();
+        const_iterator end = m_Bst.end();
+        for ( ; begin != end; ++begin)
+        {
+            if (!m_Comp(key, begin->first))
+            {
+                break;
+            }
+        }
+        return begin;
     }
     key_compare key_comp() const
     {

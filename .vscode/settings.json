@@ -36,6 +36,7 @@
 		"__debug": "cpp",
 		"__string": "cpp",
 		"__config": "cpp",
-		"version": "cpp"
+		"version": "cpp",
+		"filesystem": "cpp"
 	}
 }
