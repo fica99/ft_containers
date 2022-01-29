@@ -6,7 +6,7 @@
 /*   By: aashara- <aashara-@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 00:10:21 by aashara-          #+#    #+#             */
-/*   Updated: 2022/01/29 09:08:57 by aashara-         ###   ########.fr       */
+/*   Updated: 2022/01/29 09:18:02 by aashara-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <memory>
 #include <cstddef>
 #include <stdexcept>
+#include <limits>
 
 #include "../iterators/random_access_iterator.hpp"
 #include "../iterators/iterator.hpp"
